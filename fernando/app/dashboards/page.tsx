@@ -32,6 +32,7 @@ export default function DashboardsPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [isMutatingId, setIsMutatingId] = useState<string | null>(null);
   const [visibleIds, setVisibleIds] = useState<Set<string>>(new Set());
+  const [copiedLabel, setCopiedLabel] = useState<string | null>(null);
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -163,6 +164,10 @@ export default function DashboardsPage() {
     if (!current) return;
     try {
       await navigator.clipboard.writeText(current.key);
+      setCopiedLabel(current.label || "API key");
+      window.setTimeout(() => {
+        setCopiedLabel((value) => (value === current.label ? null : value));
+      }, 2200);
     } catch {
       // ignore clipboard errors
     }
@@ -182,7 +187,7 @@ export default function DashboardsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-white to-zinc-50 px-6 py-12 text-zinc-900 dark:from-black dark:via-black dark:to-zinc-950 dark:text-zinc-50">
+    <div className="relative min-h-screen bg-gradient-to-b from-white via-white to-zinc-50 px-6 py-12 text-zinc-900 dark:from-black dark:via-black dark:to-zinc-950 dark:text-zinc-50">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-10">
         <div className="rounded-3xl bg-gradient-to-r from-purple-500 via-fuchsia-500 to-blue-500 p-[1px] shadow-lg">
           <div className="rounded-[22px] bg-white/80 p-6 backdrop-blur dark:bg-zinc-950/70">
@@ -482,6 +487,20 @@ export default function DashboardsPage() {
                   {isCreating ? "Creating..." : "Create"}
                 </button>
               </div>
+            </div>
+          </div>
+        ) : null}
+
+        {copiedLabel ? (
+          <div className="fixed top-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-xl bg-zinc-900 px-4 py-3 text-sm text-zinc-50 shadow-lg ring-1 ring-zinc-800/80 dark:bg-zinc-900 dark:text-zinc-50">
+            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[11px] font-bold text-white">
+              ✓
+            </span>
+            <div className="flex flex-col">
+              <span className="font-semibold">Copied to clipboard</span>
+              <span className="text-xs text-zinc-300">
+                Key for “{copiedLabel}” is now ready to paste.
+              </span>
             </div>
           </div>
         ) : null}
