@@ -8,11 +8,15 @@ if (!supabaseUrl || !supabaseServiceRoleKey) {
 }
 
 export function supabaseServer() {
-  return createClient(supabaseUrl, supabaseServiceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  });
+  return createClient(
+    supabaseUrl as string,
+    supabaseServiceRoleKey as string,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  );
 }
 
