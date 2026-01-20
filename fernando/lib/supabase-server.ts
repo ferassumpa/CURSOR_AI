@@ -9,8 +9,8 @@ if (!supabaseUrl || !supabaseServiceRoleKey) {
 
 export function supabaseServer() {
   return createClient(
-    supabaseUrl as string,
-    supabaseServiceRoleKey as string,
+    supabaseUrl!,
+    supabaseServiceRoleKey!,
     {
       auth: {
         autoRefreshToken: false,
