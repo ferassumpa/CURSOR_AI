@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Sidebar } from "../components/sidebar";
 
 interface ApiKey {
   id: string;
@@ -33,6 +34,8 @@ export default function DashboardsPage() {
   const [isMutatingId, setIsMutatingId] = useState<string | null>(null);
   const [visibleIds, setVisibleIds] = useState<Set<string>>(new Set());
   const [copiedLabel, setCopiedLabel] = useState<string | null>(null);
+const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -81,6 +84,8 @@ export default function DashboardsPage() {
       setModalLimitEnabled(false);
       setModalLimit("100");
       setIsModalOpen(false);
+    setSuccessMessage("API key created successfully!");
+    setTimeout(() => setSuccessMessage(null), 2200);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create key");
     } finally {
@@ -135,6 +140,8 @@ export default function DashboardsPage() {
       });
       if (!response.ok) throw new Error("Failed to delete key");
       await fetchKeys();
+    setSuccessMessage("API key deleted!");
+    setTimeout(() => setSuccessMessage(null), 2200);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete key");
     } finally {
@@ -187,8 +194,10 @@ export default function DashboardsPage() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-white via-white to-zinc-50 px-6 py-12 text-zinc-900 dark:from-black dark:via-black dark:to-zinc-950 dark:text-zinc-50">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10">
+    <div className="flex min-h-screen bg-gradient-to-b from-white via-white to-zinc-50 text-zinc-900 dark:from-black dark:via-black dark:to-zinc-950 dark:text-zinc-50">
+      <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen((prev) => !prev)} />
+      <div className={`flex-1 px-8 py-8 transition-all duration-300 ${isSidebarOpen ? "ml-60" : "ml-0"}`}>
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <div className="rounded-3xl bg-gradient-to-r from-purple-500 via-fuchsia-500 to-blue-500 p-[1px] shadow-lg">
           <div className="rounded-[22px] bg-white/80 p-6 backdrop-blur dark:bg-zinc-950/70">
             <div className="flex flex-col gap-2">
@@ -491,8 +500,14 @@ export default function DashboardsPage() {
           </div>
         ) : null}
 
+        {successMessage ? (
+          <div className={`fixed top-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl px-5 py-3 text-sm text-white shadow-lg ring-1 ${successMessage.includes('deleted') ? 'bg-red-600 ring-red-600' : 'bg-emerald-600 ring-emerald-600'}`}>
+            <span className={`inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-[13px] font-bold ${successMessage.includes('deleted') ? 'text-red-600' : 'text-emerald-600'}`}>✓</span>
+            <span>{successMessage}</span>
+          </div>
+        ) : null}
         {copiedLabel ? (
-          <div className="fixed top-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-xl bg-zinc-900 px-4 py-3 text-sm text-zinc-50 shadow-lg ring-1 ring-zinc-800/80 dark:bg-zinc-900 dark:text-zinc-50">
+          <div className="fixed top-16 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-xl bg-zinc-900 px-4 py-3 text-sm text-zinc-50 shadow-lg ring-1 ring-zinc-800/80 dark:bg-zinc-900 dark:text-zinc-50">
             <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[11px] font-bold text-white">
               ✓
             </span>
@@ -504,6 +519,7 @@ export default function DashboardsPage() {
             </div>
           </div>
         ) : null}
+        </div>
       </div>
     </div>
   );
